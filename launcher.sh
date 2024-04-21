@@ -22,7 +22,7 @@ if [ -e current_version ]; then
     CURRENT_VERSION=`cat current_version`
 fi
 if [ -e $CURRENT_VERSION/panel/database.json -a ! -e database/database.json ]; then
-    mkdir database
+    mkdir -p database
     mv $CURRENT_VERSION/panel/database.json database/
     cd $CURRENT_VERSION/panel
     ln -s ../../database/database.json .
@@ -37,7 +37,7 @@ if [ $CURRENT_VERSION != $LATEST_VERSION ]; then
     rm -f wizard.tar.gz
     wget https://github.com/peopleassistant/655665xyz/releases/download/$LATEST_VERSION/wizard.tar.gz && mv wizard.tar.gz ..
     cd ../..
-    mkdir panel
+    mkdir -p panel
     cd panel
     tar zxvf ../download/wizard.tar.gz
     if [ -e ../../database/database.json ]; then
@@ -58,4 +58,4 @@ iptables -F
 iptables -X
 cd $LATEST_VERSION/panel
 nohup ./wizard wizard.config.json >wizard.log 2>&1 &
-echo "Done.  Panel is running on 0.0.0.0:8080"
+echo "======== Done.  Panel is running on 0.0.0.0:8080 ========"
