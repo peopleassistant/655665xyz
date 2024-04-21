@@ -43,10 +43,10 @@ if [ $CURRENT_VERSION != $LATEST_VERSION ]; then
     if [ -e ../../database/database.json ]; then
         ln -s ../../database/database.json .
     fi
-    cd ../..
     if [ -e wizard ]; then
-        echo $LATEST_VERSION > current_version
+        echo $LATEST_VERSION > ../../current_version
     fi
+    cd ../..
 fi
 killall wizard 2>/dev/null
 killall geneva 2>/dev/null
@@ -57,5 +57,5 @@ killall real301multi 2>/dev/null
 iptables -F
 iptables -X
 cd $LATEST_VERSION/panel
-nohup ./wizard wizard.config.json 2>&1 &
+nohup ./wizard wizard.config.json >wizard.log 2>&1 &
 echo "Done.  Panel is running on 0.0.0.0:8080"
