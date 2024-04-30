@@ -56,6 +56,9 @@ killall real301 2>/dev/null
 killall real301multi 2>/dev/null
 iptables -F
 iptables -X
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
 cd $LATEST_VERSION/panel
+ulimit -n 65535
 nohup ./wizard wizard.config.json >wizard.log 2>&1 &
 echo "======== Done.  Panel is running on 0.0.0.0:8080 ========"
