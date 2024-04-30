@@ -8,17 +8,21 @@ fi
 if type apt-get >/dev/null 2>/dev/null; then
     type wget >/dev/null 2>/dev/null || apt-get -y install wget
     type iptables >/dev/null 2>/dev/null || apt-get -y install iptables
+    type killall >/dev/null 2>/dev/null || apt-get -y install psmisc
 elif type yum >/dev/null 2>/dev/null; then
     type wget >/dev/null 2>/dev/null || yum -y install wget
     type iptables >/dev/null 2>/dev/null || yum -y install iptables
+    type killall >/dev/null 2>/dev/null || yum -y install psmisc
 else
     echo "WARNING: Only Redhat/CentOS and Debian/Ubuntu is tested."
 fi
 type iptables >/dev/null 2>/dev/null || export PATH=$PATH:/usr/sbin:/sbin
 type wget >/dev/null 2>/dev/null || echo "ERROR: wget is not installed."
 type iptables >/dev/null 2>/dev/null || echo "ERROR: iptables is not installed."
+type killall >/dev/null 2>/dev/null || echo "ERROR: killall(psmisc package) is not installed."
 type wget >/dev/null 2>/dev/null || exit 2
 type iptables >/dev/null 2>/dev/null || exit 3
+type killall >/dev/null 2>/dev/null || exit 4
 
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
