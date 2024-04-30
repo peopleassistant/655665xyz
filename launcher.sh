@@ -14,6 +14,7 @@ elif type yum >/dev/null 2>/dev/null; then
 else
     echo "WARNING: Only Redhat/CentOS and Debian/Ubuntu is tested."
 fi
+type iptables >/dev/null 2>/dev/null || export PATH=$PATH:/usr/sbin:/sbin
 
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
