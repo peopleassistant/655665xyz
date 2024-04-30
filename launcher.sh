@@ -15,6 +15,10 @@ else
     echo "WARNING: Only Redhat/CentOS and Debian/Ubuntu is tested."
 fi
 type iptables >/dev/null 2>/dev/null || export PATH=$PATH:/usr/sbin:/sbin
+type wget >/dev/null 2>/dev/null || echo "ERROR: wget is not installed."
+type iptables >/dev/null 2>/dev/null || echo "ERROR: iptables is not installed."
+type wget >/dev/null 2>/dev/null || exit 2
+type iptables >/dev/null 2>/dev/null || exit 3
 
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
