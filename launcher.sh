@@ -63,6 +63,7 @@ killall js301 2>/dev/null
 killall js301tohttps 2>/dev/null
 killall real301 2>/dev/null
 killall real301multi 2>/dev/null
+killall cmwallhttp 2>/dev/null
 iptables -F
 iptables -X
 iptables -P INPUT ACCEPT
