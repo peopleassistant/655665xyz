@@ -5,14 +5,19 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
+type curl >/dev/null 2>/dev/null || echo "ERROR: curl is not installed."
+type curl >/dev/null 2>/dev/null || exit 2
+CURL_655665_FAILED=0; curl 'https://license.655665.xyz/ip' > /dev/null 2>/dev/null || CURL_655665_FAILED=1
 if type apt-get >/dev/null 2>/dev/null; then
     type wget >/dev/null 2>/dev/null || apt-get -y install wget
     type iptables >/dev/null 2>/dev/null || apt-get -y install iptables
     type killall >/dev/null 2>/dev/null || apt-get -y install psmisc
+    [ $CURL_655665_FAILED = 0 ] || apt-get -y upgrade ca-certificates
 elif type yum >/dev/null 2>/dev/null; then
     type wget >/dev/null 2>/dev/null || yum -y install wget
     type iptables >/dev/null 2>/dev/null || yum -y install iptables
     type killall >/dev/null 2>/dev/null || yum -y install psmisc
+    [ $CURL_655665_FAILED = 0 ] || yum -y upgrade ca-certificates
 else
     echo "WARNING: Only Redhat/CentOS and Debian/Ubuntu is tested."
 fi
@@ -20,12 +25,19 @@ type iptables >/dev/null 2>/dev/null || export PATH=$PATH:/usr/sbin:/sbin
 type wget >/dev/null 2>/dev/null || echo "ERROR: wget is not installed."
 type iptables >/dev/null 2>/dev/null || echo "ERROR: iptables is not installed."
 type killall >/dev/null 2>/dev/null || echo "ERROR: killall(psmisc package) is not installed."
-type wget >/dev/null 2>/dev/null || exit 2
-type iptables >/dev/null 2>/dev/null || exit 3
-type killall >/dev/null 2>/dev/null || exit 4
+CURL_655665_FAILED=0; curl 'https://license.655665.xyz/ip' > /dev/null 2>/dev/null || CURL_655665_FAILED=1
+[ $CURL_655665_FAILED = 0 ] || echo "ERROR: 'curl https://license.655665.xyz/ip' failed."
+type wget >/dev/null 2>/dev/null || exit 3
+type iptables >/dev/null 2>/dev/null || exit 4
+type killall >/dev/null 2>/dev/null || exit 5
+[ $CURL_655665_FAILED = 0 ] || exit 6
 
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
+
+echo 'curl https://raw.githubusercontent.com/peopleassistant/655665xyz/main/launcher.sh | bash' > startup.sh
+chmod +x startup.sh
+
 CURRENT_VERSION=0
 if [ -e current_version ]; then
     CURRENT_VERSION=`cat current_version`
