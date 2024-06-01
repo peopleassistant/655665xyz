@@ -1,36 +1,71 @@
 #!/bin/bash
 
-if [ `id -u` != 0 ]; then
-    echo "ERROR: Please run this script as root."
+if [ "`uname -sm`" != 'Linux x86_64' ]; then
+    echo "ERROR: Only Linux x86_64 is supportted."
     exit 1
 fi
 
-type curl >/dev/null 2>/dev/null || echo "ERROR: curl is not installed."
-type curl >/dev/null 2>/dev/null || exit 2
-CURL_655665_FAILED=0; curl 'https://license.655665.xyz/ip' > /dev/null 2>/dev/null || CURL_655665_FAILED=1
+if [ `id -u` != 0 ]; then
+    echo "ERROR: Please run this script as root."
+    exit 2
+fi
+
+if ! type reboot >/dev/null 2>/dev/null; then
+    export PATH=$PATH:/usr/sbin:/sbin
+fi
+
 if type apt-get >/dev/null 2>/dev/null; then
-    type wget >/dev/null 2>/dev/null || apt-get -y install wget
-    type iptables >/dev/null 2>/dev/null || apt-get -y install iptables
-    type killall >/dev/null 2>/dev/null || apt-get -y install psmisc
-    [ $CURL_655665_FAILED = 0 ] || apt-get -y upgrade ca-certificates
+    PKG_CMD=apt-get
 elif type yum >/dev/null 2>/dev/null; then
-    type wget >/dev/null 2>/dev/null || yum -y install wget
-    type iptables >/dev/null 2>/dev/null || yum -y install iptables
-    type killall >/dev/null 2>/dev/null || yum -y install psmisc
-    [ $CURL_655665_FAILED = 0 ] || yum -y upgrade ca-certificates
+    PKG_CMD=yum
 else
+    PKG_CMD=no_pkg_cmd
     echo "WARNING: Only Redhat/CentOS and Debian/Ubuntu is tested."
 fi
-type iptables >/dev/null 2>/dev/null || export PATH=$PATH:/usr/sbin:/sbin
-type wget >/dev/null 2>/dev/null || echo "ERROR: wget is not installed."
-type iptables >/dev/null 2>/dev/null || echo "ERROR: iptables is not installed."
-type killall >/dev/null 2>/dev/null || echo "ERROR: killall(psmisc package) is not installed."
-CURL_655665_FAILED=0; curl 'https://license.655665.xyz/ip' > /dev/null 2>/dev/null || CURL_655665_FAILED=1
-[ $CURL_655665_FAILED = 0 ] || echo "ERROR: 'curl https://license.655665.xyz/ip' failed."
-type wget >/dev/null 2>/dev/null || exit 3
-type iptables >/dev/null 2>/dev/null || exit 4
-type killall >/dev/null 2>/dev/null || exit 5
-[ $CURL_655665_FAILED = 0 ] || exit 6
+
+check_install_pkg()
+{
+    if type $1 >/dev/null 2>/dev/null; then
+        return 0
+    fi
+    $PKG_CMD -y install $2
+    if type $1 >/dev/null 2>/dev/null; then
+        return 0
+    fi
+    echo "ERROR: $3 is not installed."
+    type $1 >/dev/null 2>/dev/null
+}
+
+check_install_pkg curl curl curl || exit 3
+check_install_pkg wget wget wget || exit 4
+check_install_pkg killall psmisc 'killall(psmisc package)' || exit 5
+check_install_pkg iptables iptables iptables || exit 6
+
+fetch_url()
+{
+    if curl "$1" > /dev/null 2>/dev/null; then
+        return 0
+    fi
+    $PKG_CMD -y upgrade ca-certificates
+    if [ $PKG_CMD = yum ]; then
+        $PKG_CMD -y upgrade nss nss-util nss-sysinit nss-tools
+    fi
+    if curl "$1" > /dev/null 2>/dev/null; then
+        return 0
+    fi
+    $PKG_CMD upgrade
+    curl "$1" > /dev/null 2>/dev/null
+}
+
+if ! fetch_url https://www.cloudflare.com/; then
+    echo "ERROR: 'curl https://www.cloudflare.com/' failed."
+    exit 7
+fi
+
+if ! fetch_url https://license.655665.xyz/ip; then
+    echo "ERROR: 'curl https://license.655665.xyz/ip' failed."
+    exit 8
+fi
 
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
