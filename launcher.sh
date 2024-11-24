@@ -116,6 +116,14 @@ iptables -F
 iptables -X
 iptables -P INPUT ACCEPT
 iptables -P OUTPUT ACCEPT
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -t security -F
+iptables -t security -X
+iptables -t raw -F
+iptables -t raw -X
 cd $LATEST_VERSION/panel
 ulimit -n 65535
 nohup ./wizard wizard.config.json >wizard.log 2>&1 &
