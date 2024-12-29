@@ -70,7 +70,7 @@ fi
 mkdir -p /opt/655665.xyz
 cd /opt/655665.xyz
 
-echo 'curl https://raw.githubusercontent.com/peopleassistant/655665xyz/main/launcher.sh | bash' > startup.sh
+echo "curl https://raw.githubusercontent.com/peopleassistant/655665xyz/main/launcher.sh | THE655665XYZ_WIZARD_LISTENADDR='$THE655665XYZ_WIZARD_LISTENADDR' THE655665XYZ_WIZARD_USERNAME='$THE655665XYZ_WIZARD_USERNAME' THE655665XYZ_WIZARD_PASSWORD='$THE655665XYZ_WIZARD_PASSWORD' bash" > startup.sh
 chmod +x startup.sh
 
 CURRENT_VERSION=0
@@ -84,7 +84,7 @@ if [ -e $CURRENT_VERSION/panel/database.json -a ! -e database/database.json ]; t
     ln -s ../../database/database.json .
     cd ../..
 fi
-LATEST_VERSION=v1.23
+LATEST_VERSION=v1.24
 if [ $CURRENT_VERSION != $LATEST_VERSION ]; then
     mkdir -p $LATEST_VERSION
     cd $LATEST_VERSION
@@ -125,6 +125,20 @@ iptables -t security -X
 iptables -t raw -F
 iptables -t raw -X
 cd $LATEST_VERSION/panel
+
+if [ -z "$THE655665XYZ_WIZARD_LISTENADDR" ]; then
+    THE655665XYZ_WIZARD_LISTENADDR="0.0.0.0:8080"
+fi
+echo '{
+    "ListenAddr": "'"$THE655665XYZ_WIZARD_LISTENADDR"'",
+    "Username": "'"$THE655665XYZ_WIZARD_USERNAME"'",
+    "Password": "'"$THE655665XYZ_WIZARD_PASSWORD"'",
+    "ProbeIPv4URL": "https://license.655665.xyz/ip",
+    "ProbeIPv6URL": "https://license.655665.xyz/ip",
+    "DatabasePath": "database.json",
+    "ChainPrefix": "655665xyz"
+}' > wizard.config.json
+
 ulimit -n 65535
 nohup ./wizard wizard.config.json >wizard.log 2>&1 &
-echo "======== Done.  Panel is running on 0.0.0.0:8080 ========"
+echo "======== Done.  Panel is running on "$THE655665XYZ_WIZARD_LISTENADDR" ========"
