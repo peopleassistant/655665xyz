@@ -84,7 +84,7 @@ if [ -e $CURRENT_VERSION/panel/database.json -a ! -e database/database.json ]; t
     ln -s ../../database/database.json .
     cd ../..
 fi
-LATEST_VERSION=v1.33-beta
+LATEST_VERSION=v1.34-beta
 if [ $CURRENT_VERSION != $LATEST_VERSION ]; then
     mkdir -p $LATEST_VERSION
     cd $LATEST_VERSION
